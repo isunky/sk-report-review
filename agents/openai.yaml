@@ -1,0 +1,3 @@
+interface:
+  display_name: "Report-Review"
+  short_description: "审查可行性研究报告及配套材料，支持分批修订和逐项复核"
