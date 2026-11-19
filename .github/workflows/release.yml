@@ -1,0 +1,43 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tagged source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Validate version and package skill
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          version="$(<VERSION)"
+          if [[ ! $version =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ || "$RELEASE_TAG" != "v$version" ]]; then
+            echo "::error::Expected a vMAJOR.MINOR.PATCH tag matching VERSION."
+            exit 1
+          fi
+          git archive --format=zip --prefix=report-review/ \
+            --output="report-review-$RELEASE_TAG.zip" HEAD \
+            SKILL.md VERSION LICENSE README.md agents/openai.yaml \
+            references/review-report.md references/revision-review.md
+
+      - name: Publish GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" "report-review-$RELEASE_TAG.zip" \
+            --verify-tag --title "Report-Review $RELEASE_TAG" --generate-notes

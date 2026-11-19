@@ -71,3 +71,9 @@ flowchart LR
 - [Codex 界面配置](agents/openai.yaml) · 技能显示名称和简介
 
 按 [Apache License 2.0](LICENSE) 授权。
+
+## 版本发布
+
+稳定版本及安装包见 [GitHub Releases](https://github.com/isunky/sk-report-review/releases)。下载 `report-review-vX.Y.Z.zip`，将其中的 `report-review` 目录放到 Codex 的用户技能目录下。
+
+维护者先更新 `VERSION` 并提交，再推送与文件内容对应的 `vX.Y.Z` 标签。GitHub Actions 会检查版本号、打包技能并发布 Release。
